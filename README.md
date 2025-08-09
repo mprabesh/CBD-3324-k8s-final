@@ -333,20 +333,45 @@ DEPLOYMENT FLOW
 ### Deployment Commands
 
 ```bash
-# Deploy entire stack
+## Deployment Options
+
+### 1. Raw Kubernetes Manifests (kubectl)
+
+Traditional deployment using organized YAML manifests:
+
+```bash
+# Deploy all components
 ./deploy.sh
 
-# Individual layer deployment
-kubectl apply -f db/
-kubectl apply -f redis/
-kubectl apply -f backend/
-kubectl apply -f frontend/
+# Remove all components
+./destroy.sh
+```
 
-# Verification
-kubectl get all -n blog-database
-kubectl get all -n blog-cache
-kubectl get all -n blog-application
-kubectl get all -n blog-frontend
+**Structure:**
+- `db/`: MongoDB namespace and resources
+- `redis/`: Redis namespace and resources  
+- `backend/`: Backend API namespace and resources
+- `frontend/`: Frontend namespace and resources
+
+### 2. Helm Chart Deployment (Recommended)
+
+Modern deployment using Helm charts with templating and values management:
+
+```bash
+# Deploy with Helm
+./helm-deploy.sh
+
+# Remove with Helm
+./helm-destroy.sh
+```
+
+**Features:**
+- Template-based configuration
+- Easy upgrades and rollbacks  
+- Environment-specific deployments
+- Comprehensive validation and error handling
+
+See [helm-chart/README.md](helm-chart/README.md) for detailed Helm documentation.
 ```
 
 ---
