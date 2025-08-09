@@ -5,6 +5,8 @@
 This report documents the comprehensive Kubernetes deployment architecture for a full-stack blog application, implementing enterprise-grade security, scalability, and maintainability standards. The project utilizes a multi-namespace, multi-tier architecture with proper security isolation and automated deployment processes.
 
 **Project Date:** August 9, 2025  
+**Project Maintainer:** PRABESH MAGAR  
+**Repository:** CBD-3324-k8s-final  
 **Architecture Type:** Enterprise Multi-Namespace Kubernetes Deployment  
 **Application Stack:** Frontend (Vite), Backend (Node.js), Cache (Redis), Database (MongoDB)
 
@@ -617,5 +619,7 @@ The architecture follows Kubernetes and cloud-native best practices, making it s
 ---
 
 *Report Generated: August 9, 2025*  
+*Project Maintainer: PRABESH MAGAR*  
+*Repository: mprabesh/CBD-3324-k8s-final*  
 *Architecture Version: v1.0*  
 *Kubernetes Compatibility: v1.20+*

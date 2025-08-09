@@ -6,3 +6,10 @@ metadata:
     purpose: frontend
     environment: production
     team: frontend
+    maintainer: prabesh-magar
+    project: blog-k8s-deployment
+  annotations:
+    project.maintainer: "PRABESH MAGAR"
+    project.repository: "mprabesh/CBD-3324-k8s-final"
+    project.course: "CBD-3324"
+    project.date: "2025-08-09"

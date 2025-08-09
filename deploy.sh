@@ -1,5 +1,15 @@
 #!/bin/bash
 
+#==============================================================================
+# Blog Application Kubernetes Deployment Script
+#==============================================================================
+# Project: Enterprise Multi-Namespace Blog Application
+# Maintainer: PRABESH MAGAR
+# Repository: mprabesh/CBD-3324-k8s-final
+# Course: CBD-3324 (Kubernetes Final Project)
+# Date: August 9, 2025
+#==============================================================================
+
 echo "🏗️  Creating namespaces..."
 kubectl apply -f db/namespace.yaml
 kubectl apply -f redis/namespace.yaml

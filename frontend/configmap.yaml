@@ -6,6 +6,10 @@ metadata:
   labels:
     app: blog-frontend
     env: production
+  annotations:
+    project.maintainer: "PRABESH MAGAR"
+    project.repository: "mprabesh/CBD-3324-k8s-final"
+    project.component: "frontend-config"
 data:
   # Frontend environment variables
   VITE_API_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"

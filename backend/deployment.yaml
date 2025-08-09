@@ -3,6 +3,10 @@ kind: Deployment
 metadata:
   name: blog-backend-deployment
   namespace: blog-application
+  annotations:
+    project.maintainer: "PRABESH MAGAR"
+    project.repository: "mprabesh/CBD-3324-k8s-final"
+    project.component: "backend"
 spec:
   selector:
     matchLabels:

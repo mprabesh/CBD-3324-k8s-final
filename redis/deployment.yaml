@@ -6,6 +6,10 @@ metadata:
   labels:
     app: redis
     env: production
+  annotations:
+    project.maintainer: "PRABESH MAGAR"
+    project.repository: "mprabesh/CBD-3324-k8s-final"
+    project.component: "cache"
 spec:
   replicas: 1
   selector:
