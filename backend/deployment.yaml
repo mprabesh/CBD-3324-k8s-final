@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-backend-deployment
+  namespace: blog-application
+spec:
+  selector:
+    matchLabels:
+      version: v1           # Pod label to be used by Service to select the pods from this deployment
+  replicas: 4                 # number of replica of the Pods
+  template:
+    metadata:
+      labels:
+        env: production         # Pod's label
+        app: blog-backend
+        version: v1
+    spec:
+      # Init container runs before the main application container
+      initContainers:
+      - name: db-seeder
+        image: magarp0723/blogapp-backend:v3
+        command: ["node", "seedAll.js"]
+        env:
+        # Secrets (sensitive data)
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: blog-backend-secrets
+              key: SECRET_KEY
+        - name: MONGO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: blog-backend-secrets
+              key: MONGO_USERNAME
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: blog-backend-secrets
+              key: MONGO_PASSWORD
+        # Build MONGO_URL from components
+        - name: MONGO_URL
+          value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DATABASE)?authSource=$(MONGO_AUTH_SOURCE)"
+        envFrom:
+          - configMapRef:
+              name: blog-backend-configmap
+              optional: false
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+      
+      # Main application container
+      containers:
+      - name: blog-backend-container
+        image: magarp0723/blogapp-backend:v3    # which image it will use
+        ports:
+        - containerPort: 8081     # Port exposed by container inside the Pod
+        env:
+        # Secrets (sensitive data)
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: blog-backend-secrets
+              key: SECRET_KEY
+        - name: MONGO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              name: blog-backend-secrets
+              key: MONGO_USERNAME
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: blog-backend-secrets
+              key: MONGO_PASSWORD
+        # Build MONGO_URL from components
+        - name: MONGO_URL
+          value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DATABASE)?authSource=$(MONGO_AUTH_SOURCE)"
+        envFrom:
+          - configMapRef:
+              name: blog-backend-configmap
+              optional: false

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blog-cache
+  labels:
+    purpose: cache
+    environment: production
+    team: platform

@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-backend-configmap
+  namespace: blog-application
+  labels:
+    app: blog-backend
+    env: production
+data:
+  PROD_PORT: "8081"
+  NODE_ENV: "production"
+  REDIS_URL: "redis://redis-service.blog-cache.svc.cluster.local:6379"
+  MONGO_HOST: "mongodb-service.blog-database.svc.cluster.local"
+  MONGO_PORT: "27017"
+  MONGO_DATABASE: "blog"
+  MONGO_AUTH_SOURCE: "admin"

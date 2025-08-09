@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: blog-frontend-deployment
+  namespace: blog-frontend
+  labels:
+    app: blog-frontend
+    env: production
+spec:
+  replicas: 3                 # Frontend can have multiple replicas for load distribution
+  selector:
+    matchLabels:
+      app: blog-frontend
+      version: v1
+  template:
+    metadata:
+      labels:
+        env: production
+        app: blog-frontend
+        version: v1
+    spec:
+      containers:
+      - name: blog-frontend-container
+        # Replace with your actual frontend image
+        image: magarp0723/blogapp-frontend:v9
+        ports:
+        - containerPort: 80     # Standard HTTP port for frontend
+        envFrom:
+          - configMapRef:
+              name: blog-frontend-configmap
+              optional: false
+        # Health checks for frontend
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        # Resource limits for frontend
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"

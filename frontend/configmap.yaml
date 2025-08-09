@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: blog-frontend-configmap
+  namespace: blog-frontend
+  labels:
+    app: blog-frontend
+    env: production
+data:
+  # Frontend environment variables
+  VITE_API_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"
+  BACKEND_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"
+  NODE_ENV: "production"
+  NGINX_PORT: "80"
+  # API endpoints
+  API_BASE_URL: "/api"
+  APP_VERSION: "v1.0.0"

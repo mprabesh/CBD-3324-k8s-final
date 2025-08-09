@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: blog-frontend
+  labels:
+    purpose: frontend
+    environment: production
+    team: frontend

@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: blog-frontend-service
+  namespace: blog-frontend
+  labels:
+    app: blog-frontend
+    env: production
+spec:
+  type: LoadBalancer        # External access for frontend
+  ports:
+  - port: 80                # Standard HTTP port
+    targetPort: 80          # Container port
+    protocol: TCP
+    name: http
+  - port: 443               # HTTPS port (for future SSL setup)
+    targetPort: 80          # Container port (nginx handles SSL termination)
+    protocol: TCP
+    name: https
+  selector:
+    app: blog-frontend
+    version: v1

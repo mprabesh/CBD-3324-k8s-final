@@ -1,0 +1,280 @@
+# Kubernetes Project .gitignore
+
+# ================================
+# SENSITIVE & SECURITY FILES
+# ================================
+
+# Kubernetes Secrets (if any plain text versions exist)
+*-secrets.yaml.backup
+*-secrets-plain.yaml
+secrets-plain/
+.secrets/
+
+# Environment files with sensitive data
+.env
+.env.local
+.env.production
+.env.staging
+*.env
+
+# Certificate files
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+tls/
+certs/
+
+# SSH Keys
+*.ssh/
+id_rsa*
+id_ed25519*
+
+# ================================
+# KUBERNETES TEMPORARY FILES
+# ================================
+
+# Kubectl temporary files
+.kubectl_last_applied_configuration
+.kube/cache/
+.kube/tmp/
+
+# Helm temporary files
+*.tgz
+charts/*.lock
+requirements.lock
+
+# Kustomize temporary files
+kustomization.yaml.bak
+
+# ================================
+# DEVELOPMENT & IDE FILES
+# ================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+.vimrc.local
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ================================
+# OPERATING SYSTEM FILES
+# ================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ================================
+# BACKUP & TEMPORARY FILES
+# ================================
+
+# Backup files
+*.backup
+*.bak
+*.old
+*.orig
+*.tmp
+backup/
+backups/
+
+# Log files
+*.log
+logs/
+*.out
+
+# Temporary directories
+tmp/
+temp/
+.tmp/
+
+# ================================
+# DOCKER & CONTAINER FILES
+# ================================
+
+# Docker
+Dockerfile.local
+docker-compose.override.yml
+.dockerignore.local
+
+# Container runtime
+containerd/
+.containerd/
+
+# ================================
+# CI/CD & DEPLOYMENT FILES
+# ================================
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+terraform.tfvars
+*.tfvars
+
+# Ansible
+*.retry
+.ansible/
+
+# Jenkins
+Jenkinsfile.local
+
+# GitLab CI
+.gitlab-ci.local.yml
+
+# GitHub Actions (if any local overrides)
+.github/workflows/*.local.yml
+
+# ================================
+# MONITORING & OBSERVABILITY
+# ================================
+
+# Prometheus data
+prometheus-data/
+alertmanager-data/
+
+# Grafana
+grafana-data/
+grafana.db
+
+# Logs
+fluent-bit/
+fluentd/
+
+# ================================
+# PACKAGE MANAGERS
+# ================================
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn-integrity
+package-lock.json
+yarn.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.venv/
+venv/
+ENV/
+env/
+
+# Go
+vendor/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# ================================
+# PROJECT SPECIFIC
+# ================================
+
+# Custom namespace files (if dynamically generated)
+namespaces-generated/
+
+# Local development overrides
+*-local.yaml
+*-dev.yaml
+*-development.yaml
+
+# Test environments
+test-env/
+staging-env/
+
+# Local scripts
+scripts/local/
+local-scripts/
+
+# Documentation builds
+docs/_build/
+site/
+
+# Kubernetes contexts (if stored locally)
+.kubeconfig
+kubeconfig-*
+
+# Local port-forward scripts
+port-forward.sh
+pf.sh
+
+# ================================
+# COMMENTS FOR TEAM
+# ================================
+
+# Note: This .gitignore is designed for a Kubernetes project
+# Add project-specific patterns above this line
+# Ensure no sensitive data like passwords, API keys, or certificates are committed
+# Review regularly and update as the project evolves
