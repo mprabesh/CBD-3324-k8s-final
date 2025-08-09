@@ -1,0 +1,25 @@
+{{- if .Values.redis.enabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.redis.name }}-service
+  namespace: {{ .Values.namespaces.cache }}
+  labels:
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: redis
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+spec:
+  type: {{ .Values.redis.service.type }}
+  ports:
+    - port: {{ .Values.redis.service.port }}
+      targetPort: {{ .Values.redis.service.targetPort }}
+      protocol: TCP
+      name: redis
+  selector:
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: redis
+{{- end -}}

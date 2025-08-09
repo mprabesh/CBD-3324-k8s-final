@@ -1,0 +1,77 @@
+{{- if .Values.backend.enabled -}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}
+  namespace: {{ .Values.namespaces.backend }}
+  labels:
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: blog-app
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.kubernetes.io/component: backend
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: blog-app
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: backend
+    spec:
+      {{- if .Values.backend.initContainer.enabled }}
+      initContainers:
+        - name: db-seed
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          command: {{ toJson .Values.backend.initContainer.command }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.backend.name }}-config
+            - secretRef:
+                name: {{ .Values.security.secrets.backend.name }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DATABASE)?authSource=$(MONGO_AUTH_SOURCE)"
+          resources:
+            {{- toYaml .Values.backend.initContainer.resources | nindent 12 }}
+      {{- end }}
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.service.targetPort }}
+              name: http
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.backend.name }}-config
+            - secretRef:
+                name: {{ .Values.security.secrets.backend.name }}
+          env:
+            - name: MONGO_URL
+              value: "mongodb://$(MONGO_USERNAME):$(MONGO_PASSWORD)@$(MONGO_HOST):$(MONGO_PORT)/$(MONGO_DATABASE)?authSource=$(MONGO_AUTH_SOURCE)"
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}
+          {{- if .Values.backend.healthChecks.livenessProbe.enabled }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.backend.healthChecks.livenessProbe.path }}
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: {{ .Values.backend.healthChecks.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.healthChecks.livenessProbe.periodSeconds }}
+          {{- end }}
+          {{- if .Values.backend.healthChecks.readinessProbe.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.backend.healthChecks.readinessProbe.path }}
+              port: {{ .Values.backend.service.targetPort }}
+            initialDelaySeconds: {{ .Values.backend.healthChecks.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.backend.healthChecks.readinessProbe.periodSeconds }}
+          {{- end }}
+{{- end -}}

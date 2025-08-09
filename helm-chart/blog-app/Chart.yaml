@@ -1,0 +1,26 @@
+apiVersion: v2
+name: blog-app
+description: Enterprise Multi-Namespace Blog Application Helm Chart
+version: 1.0.0
+appVersion: "v1.0.0"
+type: application
+home: "https://github.com/mprabesh/CBD-3324-k8s-final"
+sources:
+  - "https://github.com/mprabesh/CBD-3324-k8s-final"
+maintainers:
+  - name: PRABESH MAGAR
+    email: prabesh.magar@example.com
+keywords:
+  - blog
+  - kubernetes
+  - multi-namespace
+  - enterprise
+  - nodejs
+  - mongodb
+  - redis
+  - vite
+annotations:
+  category: Application
+  project.course: "CBD-3324"
+  project.maintainer: "PRABESH MAGAR"
+  project.repository: "mprabesh/CBD-3324-k8s-final"

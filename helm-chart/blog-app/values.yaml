@@ -1,0 +1,205 @@
+# Blog Application Helm Chart Values
+# Maintainer: PRABESH MAGAR
+# Repository: mprabesh/CBD-3324-k8s-final
+
+global:
+  # Global settings
+  environment: production
+  maintainer: "PRABESH MAGAR"
+  repository: "mprabesh/CBD-3324-k8s-final"
+  course: "CBD-3324"
+  projectDate: "2025-08-09"
+
+# Namespace Configuration
+namespaces:
+  frontend: blog-frontend
+  backend: blog-application
+  cache: blog-cache
+  database: blog-database
+  create: true
+
+# Frontend Configuration
+frontend:
+  enabled: true
+  name: blog-frontend
+  image:
+    repository: magarp0723/blogapp-frontend
+    tag: v9
+    pullPolicy: IfNotPresent
+  
+  replicas: 3
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 80
+  
+  ingress:
+    enabled: true
+    host: blog.local
+    path: /
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "256Mi"
+      cpu: "200m"
+  
+  healthChecks:
+    livenessProbe:
+      enabled: true
+      path: /
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      enabled: true
+      path: /
+      initialDelaySeconds: 5
+      periodSeconds: 5
+  
+  env:
+    NGINX_PORT: "80"
+    NODE_ENV: "production"
+    API_BASE_URL: "/api"
+    APP_VERSION: "v1.0.0"
+    VITE_API_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"
+    BACKEND_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"
+
+# Backend Configuration
+backend:
+  enabled: true
+  name: blog-backend
+  image:
+    repository: magarp0723/blogapp-backend
+    tag: v3
+    pullPolicy: IfNotPresent
+  
+  replicas: 4
+  
+  service:
+    type: ClusterIP
+    port: 8081
+    targetPort: 8081
+  
+  initContainer:
+    enabled: true
+    command: ["node", "seedAll.js"]
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "250m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "250m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  healthChecks:
+    livenessProbe:
+      enabled: true
+      path: /health
+      initialDelaySeconds: 30
+      periodSeconds: 10
+    readinessProbe:
+      enabled: true
+      path: /health
+      initialDelaySeconds: 5
+      periodSeconds: 5
+  
+  env:
+    PROD_PORT: "8081"
+    NODE_ENV: "production"
+    MONGO_DATABASE: "blog"
+    MONGO_AUTH_SOURCE: "admin"
+
+# Redis Configuration
+redis:
+  enabled: true
+  name: redis
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+  
+  replicas: 1
+  
+  service:
+    type: ClusterIP
+    port: 6379
+    targetPort: 6379
+  
+  persistence:
+    enabled: true
+    type: emptyDir
+    mountPath: /data
+  
+  config:
+    appendonly: true
+    args: ["--appendonly", "yes"]
+
+# MongoDB Configuration
+mongodb:
+  enabled: true
+  name: mongodb
+  image:
+    repository: mongo
+    tag: "7"
+    pullPolicy: IfNotPresent
+  
+  replicas: 1
+  
+  service:
+    type: ClusterIP
+    port: 27017
+    targetPort: 27017
+  
+  persistence:
+    enabled: true
+    type: emptyDir
+    mountPath: /data/db
+  
+  auth:
+    database: blog
+
+# Security Configuration
+security:
+  secrets:
+    backend:
+      name: blog-backend-secrets
+      data:
+        SECRET_KEY: YXBwbGVpc3JlZA==  # appleisred
+        MONGO_USERNAME: YWRtaW4=       # admin
+        MONGO_PASSWORD: cGFzc3dvcmQxMjM=  # password123
+    
+    mongodb:
+      name: mongodb-secrets
+      data:
+        MONGO_INITDB_ROOT_USERNAME: YWRtaW4=       # admin
+        MONGO_INITDB_ROOT_PASSWORD: cGFzc3dvcmQxMjM=  # password123
+
+  networkPolicies:
+    enabled: true
+
+# FQDN Service References (automatically generated)
+serviceDiscovery:
+  backend: "{{ .Values.backend.name }}-service.{{ .Values.namespaces.backend }}.svc.cluster.local"
+  redis: "{{ .Values.redis.name }}-service.{{ .Values.namespaces.cache }}.svc.cluster.local"
+  mongodb: "{{ .Values.mongodb.name }}-service.{{ .Values.namespaces.database }}.svc.cluster.local"

@@ -1,0 +1,22 @@
+{{- if .Values.backend.enabled -}}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.backend.name }}-config
+  namespace: {{ .Values.namespaces.backend }}
+  labels:
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+data:
+  PROD_PORT: {{ .Values.backend.service.targetPort | quote }}
+  NODE_ENV: {{ .Values.backend.env.NODE_ENV | quote }}
+  REDIS_URL: "redis://{{ .Values.redis.name }}-service.{{ .Values.namespaces.cache }}.svc.cluster.local:{{ .Values.redis.service.port }}"
+  MONGO_HOST: "{{ .Values.mongodb.name }}-service.{{ .Values.namespaces.database }}.svc.cluster.local"
+  MONGO_PORT: {{ .Values.mongodb.service.port | quote }}
+  MONGO_DATABASE: {{ .Values.mongodb.auth.database | quote }}
+  MONGO_AUTH_SOURCE: "admin"
+{{- end -}}

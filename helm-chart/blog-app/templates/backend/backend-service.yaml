@@ -1,0 +1,25 @@
+{{- if .Values.backend.enabled -}}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.backend.name }}-service
+  namespace: {{ .Values.namespaces.backend }}
+  labels:
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+spec:
+  type: {{ .Values.backend.service.type }}
+  ports:
+    - port: {{ .Values.backend.service.port }}
+      targetPort: {{ .Values.backend.service.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+{{- end -}}

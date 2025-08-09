@@ -1,0 +1,77 @@
+{{- if .Values.namespaces.create -}}
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespaces.frontend }}
+  labels:
+    purpose: frontend
+    environment: {{ .Values.global.environment }}
+    team: frontend
+    project: blog-k8s-deployment
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: frontend
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+    project.repository: "{{ .Values.global.repository }}"
+    project.course: "{{ .Values.global.course }}"
+    project.date: "{{ .Values.global.projectDate }}"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespaces.backend }}
+  labels:
+    purpose: application
+    environment: {{ .Values.global.environment }}
+    team: backend
+    project: blog-k8s-deployment
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: backend
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+    project.repository: "{{ .Values.global.repository }}"
+    project.course: "{{ .Values.global.course }}"
+    project.date: "{{ .Values.global.projectDate }}"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespaces.cache }}
+  labels:
+    purpose: cache
+    environment: {{ .Values.global.environment }}
+    team: platform
+    project: blog-k8s-deployment
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: cache
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+    project.repository: "{{ .Values.global.repository }}"
+    project.course: "{{ .Values.global.course }}"
+    project.date: "{{ .Values.global.projectDate }}"
+
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespaces.database }}
+  labels:
+    purpose: database
+    environment: {{ .Values.global.environment }}
+    team: platform
+    project: blog-k8s-deployment
+    app.kubernetes.io/name: blog-app
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/component: database
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+    project.repository: "{{ .Values.global.repository }}"
+    project.course: "{{ .Values.global.course }}"
+    project.date: "{{ .Values.global.projectDate }}"
+{{- end -}}
