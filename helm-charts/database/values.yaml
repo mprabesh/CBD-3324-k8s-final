@@ -31,7 +31,7 @@ mongodb:
   
   # Persistent Volume Configuration
   persistence:
-    enabled: true
+    enabled: false
     storageClass: ""  # Use default storage class
     accessMode: ReadWriteOnce
     size: 10Gi
@@ -48,15 +48,15 @@ mongodb:
   # Environment variables
   env:
     MONGO_INITDB_ROOT_USERNAME: admin
-    MONGO_INITDB_ROOT_PASSWORD: password
-    MONGO_INITDB_DATABASE: blogdb
+    MONGO_INITDB_ROOT_PASSWORD: password123
+    MONGO_INITDB_DATABASE: blog
 
 # Secrets for MongoDB
 secrets:
   enabled: true
   data:
     MONGO_INITDB_ROOT_USERNAME: "YWRtaW4="  # base64 encoded 'admin'
-    MONGO_INITDB_ROOT_PASSWORD: "cGFzc3dvcmQ="  # base64 encoded 'password'
+    MONGO_INITDB_ROOT_PASSWORD: "cGFzc3dvcmQxMjM="  # base64 encoded 'password123'
 
 # Network Policy
 networkPolicy:
@@ -64,7 +64,7 @@ networkPolicy:
 
 # Health Checks
 healthCheck:
-  enabled: true
+  enabled: false
   readinessProbe:
     exec:
       command:

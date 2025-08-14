@@ -41,29 +41,15 @@ spec:
                   name: {{ .Values.mongodb.name }}-secrets
                   key: MONGO_INITDB_ROOT_PASSWORD
             - name: MONGO_INITDB_DATABASE
-              value: {{ .Values.mongodb.env.MONGO_INITDB_DATABASE }}
+              value: {{ .Values.mongodb.env.MONGO_INITDB_DATABASE | quote }}
           {{- if .Values.mongodb.persistence.enabled }}
           volumeMounts:
             - name: mongodb-storage
               mountPath: {{ .Values.mongodb.persistence.mountPath }}
-          {{- end }}
-          {{- if .Values.healthCheck.enabled }}
-          readinessProbe:
-            exec:
-              command:
-                {{- range .Values.healthCheck.readinessProbe.exec.command }}
-                - {{ . }}
-                {{- end }}
-            initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
-          livenessProbe:
-            exec:
-              command:
-                {{- range .Values.healthCheck.livenessProbe.exec.command }}
-                - {{ . }}
-                {{- end }}
-            initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
-            periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+          {{- else }}
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: /data/db
           {{- end }}
           resources:
             {{- toYaml .Values.mongodb.resources | nindent 12 }}
@@ -72,4 +58,8 @@ spec:
         - name: mongodb-storage
           persistentVolumeClaim:
             claimName: {{ .Values.mongodb.name }}-pvc
+      {{- else }}
+      volumes:
+        - name: mongodb-data
+          emptyDir: {}
       {{- end }}
