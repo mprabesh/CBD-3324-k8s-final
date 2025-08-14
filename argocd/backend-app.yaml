@@ -14,17 +14,20 @@ spec:
   # Source Configuration - Separate Backend Helm Chart
   source:
     repoURL: https://github.com/mprabesh/CBD-3324-k8s-final
-    targetRevision: helm-chart-setup
+    targetRevision: main
     path: helm-charts/backend
     helm:
       releaseName: blog-backend
       valueFiles:
         - values.yaml
+      values: |
+        namespace:
+          name: blog-backend
   
   # Destination Configuration
   destination:
     server: https://kubernetes.default.svc
-    namespace: blog-application  # Match the namespace created by Helm chart
+    namespace: blog-backend  # Match the namespace created by Helm chart
   
   # Sync Policy
   syncPolicy:

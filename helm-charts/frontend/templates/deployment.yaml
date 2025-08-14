@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.frontend.name }}-deployment
+  name: {{ include "blog-frontend.fullname" . }}-deployment
   namespace: {{ .Values.namespace.name }}
   labels:
+    {{- include "blog-frontend.labels" . | nindent 4 }}
     app: {{ .Values.frontend.name }}
     version: {{ .Values.frontend.image.tag }}
     component: frontend
@@ -12,11 +13,13 @@ spec:
   replicas: {{ .Values.frontend.replicas }}
   selector:
     matchLabels:
+      {{- include "blog-frontend.selectorLabels" . | nindent 6 }}
       app: {{ .Values.frontend.name }}
       version: v1
   template:
     metadata:
       labels:
+        {{- include "blog-frontend.selectorLabels" . | nindent 8 }}
         env: {{ .Values.global.environment }}
         app: {{ .Values.frontend.name }}
         version: v1
@@ -30,7 +33,7 @@ spec:
               protocol: TCP
           envFrom:
             - configMapRef:
-                name: {{ .Values.frontend.name }}-configmap
+                name: {{ include "blog-frontend.fullname" . }}-configmap
                 optional: false
           {{- if .Values.healthCheck.enabled }}
           readinessProbe:

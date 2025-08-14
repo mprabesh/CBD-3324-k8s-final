@@ -2,16 +2,17 @@
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: {{ .Values.frontend.name }}-hpa
+  name: {{ include "blog-frontend.fullname" . }}-hpa
   namespace: {{ .Values.namespace.name }}
   labels:
+    {{- include "blog-frontend.labels" . | nindent 4 }}
     app: {{ .Values.frontend.name }}
     component: frontend
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: {{ .Values.frontend.name }}-deployment
+    name: {{ include "blog-frontend.fullname" . }}-deployment
   minReplicas: {{ .Values.frontend.autoscaling.minReplicas }}
   maxReplicas: {{ .Values.frontend.autoscaling.maxReplicas }}
   metrics:

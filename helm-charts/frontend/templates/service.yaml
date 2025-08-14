@@ -1,9 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ .Values.frontend.name }}-service
+  name: {{ include "blog-frontend.fullname" . }}-service
   namespace: {{ .Values.namespace.name }}
   labels:
+    {{- include "blog-frontend.labels" . | nindent 4 }}
     app: {{ .Values.frontend.name }}
     env: {{ .Values.global.environment }}
 spec:
@@ -18,5 +19,6 @@ spec:
       protocol: TCP
       name: https
   selector:
+    {{- include "blog-frontend.selectorLabels" . | nindent 4 }}
     app: {{ .Values.frontend.name }}
     version: v1
