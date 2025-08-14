@@ -6,14 +6,17 @@ metadata:
   namespace: {{ .Values.namespace.name }}
   labels:
     app: {{ .Values.frontend.name }}
-    component: frontend
   annotations:
-    {{- range $key, $value := .Values.frontend.ingress.annotations }}
-    {{ $key }}: {{ $value | quote }}
-    {{- end }}
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    # Enable CORS for frontend-backend communication
+    nginx.ingress.kubernetes.io/enable-cors: "true"
+    nginx.ingress.kubernetes.io/cors-allow-origin: "*"
+    nginx.ingress.kubernetes.io/cors-allow-methods: "GET, POST, PUT, DELETE, OPTIONS"
+    nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
 spec:
   rules:
-    - host: {{ .Values.frontend.ingress.host }}
+    - host: {{ .Values.frontend.ingress.host }}  # towards my domain
       http:
         paths:
           - path: {{ .Values.frontend.ingress.path }}

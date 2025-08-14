@@ -40,10 +40,6 @@ frontend:
     enabled: true
     host: blog.local
     path: /
-    annotations:
-      nginx.ingress.kubernetes.io/rewrite-target: /
-      nginx.ingress.kubernetes.io/ssl-redirect: "false"
-      nginx.ingress.kubernetes.io/enable-cors: "true"
   
   resources:
     requests:
