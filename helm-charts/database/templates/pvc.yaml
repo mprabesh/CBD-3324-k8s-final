@@ -7,10 +7,15 @@ metadata:
   labels:
     app: {{ .Values.mongodb.name }}
     component: database
-    app.kubernetes.io/name: {{ .Values.mongodb.name }}
+    app.kubernetes.io/name: {{ include "blog-database.name" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/component: database
     app.kubernetes.io/part-of: blog-app
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    helm.sh/chart: {{ include "blog-database.chart" . }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   accessModes:
     - {{ .Values.mongodb.persistence.accessMode }}

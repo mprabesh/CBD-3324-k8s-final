@@ -5,12 +5,11 @@ metadata:
   name: {{ .Values.redis.name }}-pvc
   namespace: {{ .Values.namespace.name }}
   labels:
-    app: {{ .Values.redis.name }}
+    {{- include "blog-cache.labels" . | nindent 4 }}
     component: cache
-    app.kubernetes.io/name: {{ .Values.redis.name }}
-    app.kubernetes.io/component: cache
-    app.kubernetes.io/part-of: blog-app
-    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   accessModes:
     - {{ .Values.redis.persistence.accessMode }}
