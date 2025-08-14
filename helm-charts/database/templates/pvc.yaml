@@ -7,6 +7,10 @@ metadata:
   labels:
     app: {{ .Values.mongodb.name }}
     component: database
+    app.kubernetes.io/name: {{ .Values.mongodb.name }}
+    app.kubernetes.io/component: database
+    app.kubernetes.io/part-of: blog-app
+    app.kubernetes.io/managed-by: Helm
 spec:
   accessModes:
     - {{ .Values.mongodb.persistence.accessMode }}

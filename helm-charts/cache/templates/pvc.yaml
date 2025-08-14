@@ -7,6 +7,10 @@ metadata:
   labels:
     app: {{ .Values.redis.name }}
     component: cache
+    app.kubernetes.io/name: {{ .Values.redis.name }}
+    app.kubernetes.io/component: cache
+    app.kubernetes.io/part-of: blog-app
+    app.kubernetes.io/managed-by: Helm
 spec:
   accessModes:
     - {{ .Values.redis.persistence.accessMode }}
