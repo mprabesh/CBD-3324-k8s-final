@@ -1,0 +1,61 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.redis.name }}-deployment
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.redis.name }}
+    version: {{ .Values.redis.image.tag }}
+    component: cache
+    environment: {{ .Values.global.environment }}
+spec:
+  replicas: {{ .Values.redis.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.redis.name }}
+      version: {{ .Values.redis.image.tag }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.redis.name }}
+        version: {{ .Values.redis.image.tag }}
+        component: cache
+    spec:
+      containers:
+        - name: {{ .Values.redis.name }}
+          image: "{{ .Values.redis.image.repository }}:{{ .Values.redis.image.tag }}"
+          imagePullPolicy: {{ .Values.redis.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.redis.service.targetPort }}
+              protocol: TCP
+          {{- if .Values.redis.persistence.enabled }}
+          volumeMounts:
+            - name: redis-storage
+              mountPath: {{ .Values.redis.persistence.mountPath }}
+          {{- end }}
+          {{- if .Values.healthCheck.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                {{- range .Values.healthCheck.readinessProbe.exec.command }}
+                - {{ . }}
+                {{- end }}
+            initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
+          livenessProbe:
+            exec:
+              command:
+                {{- range .Values.healthCheck.livenessProbe.exec.command }}
+                - {{ . }}
+                {{- end }}
+            initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.redis.resources | nindent 12 }}
+      {{- if .Values.redis.persistence.enabled }}
+      volumes:
+        - name: redis-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.redis.name }}-pvc
+      {{- end }}

@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mongodb.name }}-deployment
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.mongodb.name }}
+    version: {{ .Values.mongodb.image.tag }}
+    component: database
+    environment: {{ .Values.global.environment }}
+spec:
+  replicas: {{ .Values.mongodb.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.mongodb.name }}
+      version: {{ .Values.mongodb.image.tag }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mongodb.name }}
+        version: {{ .Values.mongodb.image.tag }}
+        component: database
+    spec:
+      containers:
+        - name: {{ .Values.mongodb.name }}
+          image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+          imagePullPolicy: {{ .Values.mongodb.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.mongodb.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongodb.name }}-secrets
+                  key: MONGO_INITDB_ROOT_USERNAME
+            - name: MONGO_INITDB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.mongodb.name }}-secrets
+                  key: MONGO_INITDB_ROOT_PASSWORD
+            - name: MONGO_INITDB_DATABASE
+              value: {{ .Values.mongodb.env.MONGO_INITDB_DATABASE }}
+          {{- if .Values.mongodb.persistence.enabled }}
+          volumeMounts:
+            - name: mongodb-storage
+              mountPath: {{ .Values.mongodb.persistence.mountPath }}
+          {{- end }}
+          {{- if .Values.healthCheck.enabled }}
+          readinessProbe:
+            exec:
+              command:
+                {{- range .Values.healthCheck.readinessProbe.exec.command }}
+                - {{ . }}
+                {{- end }}
+            initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
+          livenessProbe:
+            exec:
+              command:
+                {{- range .Values.healthCheck.livenessProbe.exec.command }}
+                - {{ . }}
+                {{- end }}
+            initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.mongodb.resources | nindent 12 }}
+      {{- if .Values.mongodb.persistence.enabled }}
+      volumes:
+        - name: mongodb-storage
+          persistentVolumeClaim:
+            claimName: {{ .Values.mongodb.name }}-pvc
+      {{- end }}

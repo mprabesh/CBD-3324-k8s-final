@@ -1,0 +1,18 @@
+{{- if .Values.namespace.create }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace.name }}
+  labels:
+    purpose: database
+    environment: {{ .Values.global.environment }}
+    team: platform
+    project: blog-k8s-deployment
+    app.kubernetes.io/name: {{ .Values.mongodb.name }}
+    app.kubernetes.io/component: database
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+    project.repository: "{{ .Values.global.repository }}"
+    project.course: "{{ .Values.global.course }}"
+    project.date: "{{ .Values.global.projectDate }}"
+{{- end }}
