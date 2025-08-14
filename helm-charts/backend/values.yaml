@@ -11,7 +11,7 @@ global:
 
 # Namespace Configuration
 namespace:
-  name: blog-application
+  name: blog-backend
   create: true
 
 # Backend Configuration

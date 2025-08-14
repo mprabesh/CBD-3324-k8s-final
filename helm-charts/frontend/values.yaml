@@ -50,13 +50,17 @@ frontend:
       memory: "128Mi"
       cpu: "100m"
     limits:
-      memory: "512Mi"
-      cpu: "500m"
+      memory: "256Mi"
+      cpu: "200m"
   
   # Environment variables
   env:
-    REACT_APP_API_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"
-    REACT_APP_ENV: "production"
+    VITE_API_URL: "http://blog-backend-service.blog-backend.svc.cluster.local:8081"
+    BACKEND_URL: "http://blog-backend-service.blog-backend.svc.cluster.local:8081"
+    NODE_ENV: "production"
+    NGINX_PORT: "80"
+    API_BASE_URL: "/api"
+    APP_VERSION: "v1.0.0"
 
 # Network Policy
 networkPolicy:
@@ -69,11 +73,15 @@ healthCheck:
     httpGet:
       path: /
       port: 80
-    initialDelaySeconds: 30
-    periodSeconds: 10
+    initialDelaySeconds: 5
+    periodSeconds: 5
+    timeoutSeconds: 3
+    failureThreshold: 3
   livenessProbe:
     httpGet:
       path: /
       port: 80
-    initialDelaySeconds: 60
-    periodSeconds: 30
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 3

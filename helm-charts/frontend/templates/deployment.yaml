@@ -13,26 +13,25 @@ spec:
   selector:
     matchLabels:
       app: {{ .Values.frontend.name }}
-      version: {{ .Values.frontend.image.tag }}
+      version: v1
   template:
     metadata:
       labels:
+        env: {{ .Values.global.environment }}
         app: {{ .Values.frontend.name }}
-        version: {{ .Values.frontend.image.tag }}
-        component: frontend
+        version: v1
     spec:
       containers:
-        - name: {{ .Values.frontend.name }}
+        - name: {{ .Values.frontend.name }}-container
           image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
           imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
           ports:
             - containerPort: {{ .Values.frontend.service.targetPort }}
               protocol: TCP
-          env:
-            - name: REACT_APP_API_URL
-              value: "{{ .Values.frontend.env.REACT_APP_API_URL }}"
-            - name: REACT_APP_ENV
-              value: "{{ .Values.frontend.env.REACT_APP_ENV }}"
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.frontend.name }}-configmap
+                optional: false
           {{- if .Values.healthCheck.enabled }}
           readinessProbe:
             httpGet:
@@ -40,12 +39,16 @@ spec:
               port: {{ .Values.healthCheck.readinessProbe.httpGet.port }}
             initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.readinessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthCheck.readinessProbe.failureThreshold }}
           livenessProbe:
             httpGet:
               path: {{ .Values.healthCheck.livenessProbe.httpGet.path }}
               port: {{ .Values.healthCheck.livenessProbe.httpGet.port }}
             initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.healthCheck.livenessProbe.timeoutSeconds }}
+            failureThreshold: {{ .Values.healthCheck.livenessProbe.failureThreshold }}
           {{- end }}
           resources:
             {{- toYaml .Values.frontend.resources | nindent 12 }}

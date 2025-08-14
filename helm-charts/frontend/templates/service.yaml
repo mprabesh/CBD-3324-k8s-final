@@ -5,14 +5,18 @@ metadata:
   namespace: {{ .Values.namespace.name }}
   labels:
     app: {{ .Values.frontend.name }}
-    component: frontend
-    environment: {{ .Values.global.environment }}
+    env: {{ .Values.global.environment }}
 spec:
   type: {{ .Values.frontend.service.type }}
   ports:
     - port: {{ .Values.frontend.service.port }}
       targetPort: {{ .Values.frontend.service.targetPort }}
       protocol: TCP
+      name: http
+    - port: 443
+      targetPort: 80
+      protocol: TCP
+      name: https
   selector:
     app: {{ .Values.frontend.name }}
-    version: {{ .Values.frontend.image.tag }}
+    version: v1
