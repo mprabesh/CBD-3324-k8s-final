@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.frontend.name }}-deployment
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.frontend.name }}
+    version: {{ .Values.frontend.image.tag }}
+    component: frontend
+    environment: {{ .Values.global.environment }}
+spec:
+  replicas: {{ .Values.frontend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.frontend.name }}
+      version: {{ .Values.frontend.image.tag }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.frontend.name }}
+        version: {{ .Values.frontend.image.tag }}
+        component: frontend
+    spec:
+      containers:
+        - name: {{ .Values.frontend.name }}
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.frontend.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: REACT_APP_API_URL
+              value: "{{ .Values.frontend.env.REACT_APP_API_URL }}"
+            - name: REACT_APP_ENV
+              value: "{{ .Values.frontend.env.REACT_APP_ENV }}"
+          {{- if .Values.healthCheck.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.readinessProbe.httpGet.path }}
+              port: {{ .Values.healthCheck.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.livenessProbe.httpGet.path }}
+              port: {{ .Values.healthCheck.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}

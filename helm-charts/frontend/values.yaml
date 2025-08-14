@@ -1,0 +1,79 @@
+# Frontend Service Values
+# Maintainer: PRABESH MAGAR
+# Repository: mprabesh/CBD-3324-k8s-final
+
+global:
+  environment: production
+  maintainer: "PRABESH MAGAR"
+  repository: "mprabesh/CBD-3324-k8s-final"
+  course: "CBD-3324"
+  projectDate: "2025-08-14"
+
+# Namespace Configuration
+namespace:
+  name: blog-frontend
+  create: true
+
+# Frontend Configuration
+frontend:
+  name: blog-frontend
+  image:
+    repository: magarp0723/blogapp-frontend
+    tag: v9
+    pullPolicy: IfNotPresent
+  
+  replicas: 3
+  
+  autoscaling:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 70
+    targetMemoryUtilizationPercentage: 80
+  
+  service:
+    type: LoadBalancer
+    port: 80
+    targetPort: 80
+  
+  ingress:
+    enabled: true
+    host: blog.local
+    path: /
+    annotations:
+      nginx.ingress.kubernetes.io/rewrite-target: /
+      nginx.ingress.kubernetes.io/ssl-redirect: "false"
+      nginx.ingress.kubernetes.io/enable-cors: "true"
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+  
+  # Environment variables
+  env:
+    REACT_APP_API_URL: "http://blog-backend-service.blog-application.svc.cluster.local:8081"
+    REACT_APP_ENV: "production"
+
+# Network Policy
+networkPolicy:
+  enabled: true
+  
+# Health Checks
+healthCheck:
+  enabled: true
+  readinessProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  livenessProbe:
+    httpGet:
+      path: /
+      port: 80
+    initialDelaySeconds: 60
+    periodSeconds: 30

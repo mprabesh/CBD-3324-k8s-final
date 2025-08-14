@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.backend.name }}-deployment
+  namespace: {{ .Values.namespace.name }}
+  labels:
+    app: {{ .Values.backend.name }}
+    version: {{ .Values.backend.image.tag }}
+    component: backend
+    environment: {{ .Values.global.environment }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.backend.name }}
+      version: {{ .Values.backend.image.tag }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.backend.name }}
+        version: {{ .Values.backend.image.tag }}
+        component: backend
+    spec:
+      containers:
+        - name: {{ .Values.backend.name }}
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          imagePullPolicy: {{ .Values.backend.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.backend.service.targetPort }}
+              protocol: TCP
+          envFrom:
+            {{- if .Values.configMap.enabled }}
+            - configMapRef:
+                name: {{ .Values.backend.name }}-config
+            {{- end }}
+            {{- if .Values.secrets.enabled }}
+            - secretRef:
+                name: {{ .Values.backend.name }}-secrets
+            {{- end }}
+          {{- if .Values.healthCheck.enabled }}
+          readinessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.readinessProbe.httpGet.path }}
+              port: {{ .Values.healthCheck.readinessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.readinessProbe.periodSeconds }}
+          livenessProbe:
+            httpGet:
+              path: {{ .Values.healthCheck.livenessProbe.httpGet.path }}
+              port: {{ .Values.healthCheck.livenessProbe.httpGet.port }}
+            initialDelaySeconds: {{ .Values.healthCheck.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.healthCheck.livenessProbe.periodSeconds }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.backend.resources | nindent 12 }}

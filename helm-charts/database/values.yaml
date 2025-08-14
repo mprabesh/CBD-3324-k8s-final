@@ -1,0 +1,83 @@
+# Database Service Values
+# Maintainer: PRABESH MAGAR
+# Repository: mprabesh/CBD-3324-k8s-final
+
+global:
+  environment: production
+  maintainer: "PRABESH MAGAR"
+  repository: "mprabesh/CBD-3324-k8s-final"
+  course: "CBD-3324"
+  projectDate: "2025-08-14"
+
+# Namespace Configuration
+namespace:
+  name: blog-database
+  create: true
+
+# MongoDB Configuration
+mongodb:
+  name: mongodb
+  image:
+    repository: mongo
+    tag: "7"
+    pullPolicy: IfNotPresent
+  
+  replicas: 1
+  
+  service:
+    type: ClusterIP
+    port: 27017
+    targetPort: 27017
+  
+  # Persistent Volume Configuration
+  persistence:
+    enabled: true
+    storageClass: ""  # Use default storage class
+    accessMode: ReadWriteOnce
+    size: 10Gi
+    mountPath: /data/db
+  
+  resources:
+    requests:
+      memory: "512Mi"
+      cpu: "250m"
+    limits:
+      memory: "2Gi"
+      cpu: "1000m"
+  
+  # Environment variables
+  env:
+    MONGO_INITDB_ROOT_USERNAME: admin
+    MONGO_INITDB_ROOT_PASSWORD: password
+    MONGO_INITDB_DATABASE: blogdb
+
+# Secrets for MongoDB
+secrets:
+  enabled: true
+  data:
+    MONGO_INITDB_ROOT_USERNAME: "YWRtaW4="  # base64 encoded 'admin'
+    MONGO_INITDB_ROOT_PASSWORD: "cGFzc3dvcmQ="  # base64 encoded 'password'
+
+# Network Policy
+networkPolicy:
+  enabled: true
+
+# Health Checks
+healthCheck:
+  enabled: true
+  readinessProbe:
+    exec:
+      command:
+        - mongo
+        - --eval
+        - "db.adminCommand('ping')"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  livenessProbe:
+    exec:
+      command:
+        - mongo
+        - --eval
+        - "db.adminCommand('ping')"
+    initialDelaySeconds: 60
+    periodSeconds: 30

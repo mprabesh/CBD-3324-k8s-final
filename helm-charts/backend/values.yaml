@@ -1,0 +1,86 @@
+# Backend Service Values
+# Maintainer: PRABESH MAGAR
+# Repository: mprabesh/CBD-3324-k8s-final
+
+global:
+  environment: production
+  maintainer: "PRABESH MAGAR"
+  repository: "mprabesh/CBD-3324-k8s-final"
+  course: "CBD-3324"
+  projectDate: "2025-08-14"
+
+# Namespace Configuration
+namespace:
+  name: blog-application
+  create: true
+
+# Backend Configuration
+backend:
+  name: blog-backend
+  image:
+    repository: magarp0723/blogapp-backend
+    tag: v3
+    pullPolicy: IfNotPresent
+  
+  replicas: 2
+  
+  service:
+    type: ClusterIP
+    port: 8081
+    targetPort: 8081
+  
+  resources:
+    requests:
+      memory: "256Mi"
+      cpu: "200m"
+    limits:
+      memory: "1Gi"
+      cpu: "1000m"
+  
+  # Environment variables
+  env:
+    NODE_ENV: "production"
+    PORT: "8081"
+    MONGO_HOST: "mongodb-service.blog-database.svc.cluster.local"
+    MONGO_PORT: "27017"
+    MONGO_DB: "blogdb"
+    REDIS_URL: "redis://redis-service.blog-cache.svc.cluster.local:6379"
+
+# ConfigMap for backend configuration
+configMap:
+  enabled: true
+  data:
+    NODE_ENV: "production"
+    PORT: "8081"
+    MONGO_HOST: "mongodb-service.blog-database.svc.cluster.local"
+    MONGO_PORT: "27017"
+    MONGO_DB: "blogdb"
+    REDIS_URL: "redis://redis-service.blog-cache.svc.cluster.local:6379"
+
+# Secrets for sensitive data
+secrets:
+  enabled: true
+  data:
+    MONGO_USERNAME: "YWRtaW4="  # base64 encoded 'admin'
+    MONGO_PASSWORD: "cGFzc3dvcmQ="  # base64 encoded 'password'
+    JWT_SECRET: "bXlfc3VwZXJfc2VjcmV0X2p3dF9rZXk="  # base64 encoded secret
+
+# Network Policy
+networkPolicy:
+  enabled: true
+  
+# Health Checks
+healthCheck:
+  enabled: true
+  readinessProbe:
+    httpGet:
+      path: /health
+      port: 8081
+    initialDelaySeconds: 30
+    periodSeconds: 10
+  livenessProbe:
+    httpGet:
+      path: /health
+      port: 8081
+    initialDelaySeconds: 60
+    periodSeconds: 30

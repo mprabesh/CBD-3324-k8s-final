@@ -1,0 +1,18 @@
+{{- if .Values.namespace.create }}
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: {{ .Values.namespace.name }}
+  labels:
+    purpose: frontend
+    environment: {{ .Values.global.environment }}
+    team: frontend
+    project: blog-k8s-deployment
+    app.kubernetes.io/name: {{ .Values.frontend.name }}
+    app.kubernetes.io/component: frontend
+  annotations:
+    project.maintainer: "{{ .Values.global.maintainer }}"
+    project.repository: "{{ .Values.global.repository }}"
+    project.course: "{{ .Values.global.course }}"
+    project.date: "{{ .Values.global.projectDate }}"
+{{- end }}

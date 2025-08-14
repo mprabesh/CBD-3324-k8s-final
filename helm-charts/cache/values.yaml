@@ -1,0 +1,68 @@
+# Cache Service Values
+# Maintainer: PRABESH MAGAR
+# Repository: mprabesh/CBD-3324-k8s-final
+
+global:
+  environment: production
+  maintainer: "PRABESH MAGAR"
+  repository: "mprabesh/CBD-3324-k8s-final"
+  course: "CBD-3324"
+  projectDate: "2025-08-14"
+
+# Namespace Configuration
+namespace:
+  name: blog-cache
+  create: true
+
+# Redis Configuration
+redis:
+  name: redis
+  image:
+    repository: redis
+    tag: 7-alpine
+    pullPolicy: IfNotPresent
+  
+  replicas: 1
+  
+  service:
+    type: ClusterIP
+    port: 6379
+    targetPort: 6379
+  
+  # Persistent Volume Configuration
+  persistence:
+    enabled: true
+    storageClass: ""  # Use default storage class
+    accessMode: ReadWriteOnce
+    size: 5Gi
+    mountPath: /data
+  
+  resources:
+    requests:
+      memory: "128Mi"
+      cpu: "100m"
+    limits:
+      memory: "512Mi"
+      cpu: "500m"
+
+# Network Policy
+networkPolicy:
+  enabled: true
+
+# Health Checks
+healthCheck:
+  enabled: true
+  readinessProbe:
+    exec:
+      command:
+        - redis-cli
+        - ping
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  livenessProbe:
+    exec:
+      command:
+        - redis-cli
+        - ping
+    initialDelaySeconds: 30
+    periodSeconds: 30

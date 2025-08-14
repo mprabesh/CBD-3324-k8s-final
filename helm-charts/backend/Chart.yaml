@@ -1,0 +1,31 @@
+apiVersion: v2
+name: blog-backend
+description: Blog Backend Node.js API Helm Chart
+maintainer: PRABESH MAGAR
+repository: mprabesh/CBD-3324-k8s-final
+course: CBD-3324
+
+# Chart version
+version: 1.0.0
+
+# Application version
+appVersion: "v3"
+
+# Chart type
+type: application
+
+keywords:
+  - blog
+  - backend
+  - nodejs
+  - express
+  - api
+  - microservices
+
+sources:
+  - https://github.com/mprabesh/CBD-3324-k8s-final
+
+annotations:
+  project.maintainer: "PRABESH MAGAR"
+  project.course: "CBD-3324"
+  project.date: "2025-08-14"
