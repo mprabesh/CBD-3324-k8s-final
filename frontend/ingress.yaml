@@ -6,7 +6,6 @@ metadata:
   labels:
     app: blog-frontend
   annotations:
-    # Common ingress annotations
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/ssl-redirect: "false"
     # Enable CORS for frontend-backend communication
@@ -16,7 +15,7 @@ metadata:
     nginx.ingress.kubernetes.io/cors-allow-headers: "DNT,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Authorization"
 spec:
   rules:
-  - host: blog.local  # Change this to your domain
+  - host: blog.local # towards my domain
     http:
       paths:
       - path: /
@@ -26,8 +25,3 @@ spec:
             name: blog-frontend-service
             port:
               number: 80
-  # Uncomment for HTTPS
-  # tls:
-  # - hosts:
-  #   - blog.local
-  #   secretName: blog-tls-secret
