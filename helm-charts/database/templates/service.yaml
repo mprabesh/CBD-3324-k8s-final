@@ -16,5 +16,5 @@ spec:
       targetPort: {{ .Values.mongodb.service.targetPort }}
       protocol: TCP
   selector:
-    app: {{ .Values.mongodb.name }}
-    version: {{ .Values.mongodb.image.tag }}
+    {{- include "blog-database.selectorLabels" . | nindent 4 }}
+    component: database

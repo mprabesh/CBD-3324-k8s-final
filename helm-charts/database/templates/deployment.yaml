@@ -13,14 +13,14 @@ spec:
   replicas: {{ .Values.mongodb.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.mongodb.name }}
-      version: {{ .Values.mongodb.image.tag }}
+      {{- include "blog-database.selectorLabels" . | nindent 6 }}
+      component: database
   template:
     metadata:
       labels:
-        app: {{ .Values.mongodb.name }}
-        version: {{ .Values.mongodb.image.tag }}
+        {{- include "blog-database.selectorLabels" . | nindent 8 }}
         component: database
+        version: {{ .Values.mongodb.image.tag }}
     spec:
       containers:
         - name: {{ .Values.mongodb.name }}

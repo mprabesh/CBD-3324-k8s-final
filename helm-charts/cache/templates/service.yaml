@@ -4,9 +4,11 @@ metadata:
   name: {{ .Values.redis.name }}-service
   namespace: {{ .Values.namespace.name }}
   labels:
-    app: {{ .Values.redis.name }}
+    {{- include "blog-cache.labels" . | nindent 4 }}
     component: cache
-    environment: {{ .Values.global.environment }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   type: {{ .Values.redis.service.type }}
   ports:
@@ -14,5 +16,5 @@ spec:
       targetPort: {{ .Values.redis.service.targetPort }}
       protocol: TCP
   selector:
-    app: {{ .Values.redis.name }}
-    version: {{ .Values.redis.image.tag }}
+    {{- include "blog-cache.selectorLabels" . | nindent 4 }}
+    component: cache

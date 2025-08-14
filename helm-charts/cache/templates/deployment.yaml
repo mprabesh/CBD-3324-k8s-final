@@ -4,22 +4,23 @@ metadata:
   name: {{ .Values.redis.name }}-deployment
   namespace: {{ .Values.namespace.name }}
   labels:
-    app: {{ .Values.redis.name }}
-    version: {{ .Values.redis.image.tag }}
+    {{- include "blog-cache.labels" . | nindent 4 }}
     component: cache
-    environment: {{ .Values.global.environment }}
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 spec:
   replicas: {{ .Values.redis.replicas }}
   selector:
     matchLabels:
-      app: {{ .Values.redis.name }}
-      version: {{ .Values.redis.image.tag }}
+      {{- include "blog-cache.selectorLabels" . | nindent 6 }}
+      component: cache
   template:
     metadata:
       labels:
-        app: {{ .Values.redis.name }}
-        version: {{ .Values.redis.image.tag }}
+        {{- include "blog-cache.selectorLabels" . | nindent 8 }}
         component: cache
+        version: {{ .Values.redis.image.tag }}
     spec:
       containers:
         - name: {{ .Values.redis.name }}
