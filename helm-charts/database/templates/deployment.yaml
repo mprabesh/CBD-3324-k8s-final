@@ -20,7 +20,7 @@ spec:
       labels:
         {{- include "blog-database.selectorLabels" . | nindent 8 }}
         component: database
-        version: {{ .Values.mongodb.image.tag }}
+        version: {{ .Values.mongodb.image.tag | quote }}
     spec:
       containers:
         - name: {{ .Values.mongodb.name }}

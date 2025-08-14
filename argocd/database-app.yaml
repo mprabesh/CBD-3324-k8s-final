@@ -1,0 +1,46 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blog-database
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: blog-database
+    app.kubernetes.io/component: database
+    project.course: CBD-3324
+    maintainer: PRABESH-MAGAR
+spec:
+  project: default
+  
+  # Source Configuration - Separate Database Helm Chart
+  source:
+    repoURL: https://github.com/mprabesh/CBD-3324-k8s-final
+    targetRevision: main
+    path: helm-charts/database
+    helm:
+      releaseName: blog-database
+      valueFiles:
+        - values.yaml
+      values: |
+        namespace:
+          name: blog-database
+  
+  # Destination Configuration
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: blog-database  # Match the namespace created by Helm chart
+  
+  # Sync Policy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m

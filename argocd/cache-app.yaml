@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: blog-cache
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: blog-cache
+    app.kubernetes.io/component: cache
+    project.course: CBD-3324
+    maintainer: PRABESH-MAGAR
+spec:
+  project: default
+  
+  # Source Configuration - Separate Cache Helm Chart
+  source:
+    repoURL: https://github.com/mprabesh/CBD-3324-k8s-final
+    targetRevision: helm-chart-setup
+    path: helm-charts/cache
+    helm:
+      releaseName: blog-cache
+      valueFiles:
+        - values.yaml
+  
+  # Destination Configuration
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: blog-cache  # Match the namespace created by Helm chart
+  
+  # Sync Policy
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 1m
