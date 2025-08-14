@@ -5,8 +5,11 @@ metadata:
   name: {{ .Values.backend.name }}-config
   namespace: {{ .Values.namespace.name }}
   labels:
-    app: {{ .Values.backend.name }}
+    {{- include "blog-backend.labels" . | nindent 4 }}
     component: backend
+  annotations:
+    meta.helm.sh/release-name: {{ .Release.Name }}
+    meta.helm.sh/release-namespace: {{ .Release.Namespace }}
 data:
   {{- range $key, $value := .Values.configMap.data }}
   {{ $key }}: {{ $value | quote }}
