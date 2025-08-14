@@ -51,10 +51,11 @@ configMap:
   enabled: true
   data:
     NODE_ENV: "production"
-    PORT: "8081"
+    PROD_PORT: "8081"
     MONGO_HOST: "mongodb-service.blog-database.svc.cluster.local"
     MONGO_PORT: "27017"
-    MONGO_DB: "blogdb"
+    MONGO_DATABASE: "blog"
+    MONGO_AUTH_SOURCE: "admin"
     REDIS_URL: "redis://redis-service.blog-cache.svc.cluster.local:6379"
 
 # Secrets for sensitive data
@@ -62,8 +63,8 @@ secrets:
   enabled: true
   data:
     MONGO_USERNAME: "YWRtaW4="  # base64 encoded 'admin'
-    MONGO_PASSWORD: "cGFzc3dvcmQ="  # base64 encoded 'password'
-    JWT_SECRET: "bXlfc3VwZXJfc2VjcmV0X2p3dF9rZXk="  # base64 encoded secret
+    MONGO_PASSWORD: "cGFzc3dvcmQxMjM="  # base64 encoded 'password123'
+    SECRET_KEY: "YXBwbGVpc3JlZA=="  # base64 encoded 'appleisred'
 
 # Network Policy
 networkPolicy:
