@@ -2,6 +2,12 @@
 # Maintainer: PRABESH MAGAR
 # Repository: mprabesh/CBD-3324-k8s-final
 
+# Override name of the chart
+nameOverride: ""
+
+# Override the full name of the resources
+fullnameOverride: ""
+
 global:
   environment: production
   maintainer: "PRABESH MAGAR"
